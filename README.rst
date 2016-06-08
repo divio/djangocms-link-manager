@@ -1,5 +1,5 @@
 ======================
-DJANGOCMS_LINK_MANAGER
+djangoCMS Link Manager
 ======================
 
 An extensible means of checking for broken links in virtually any
