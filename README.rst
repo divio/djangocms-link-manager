@@ -2,6 +2,9 @@
 djangoCMS Link Manager
 ======================
 
+.. image:: https://travis-ci.org/divio/djangocms-link-manager.svg?branch=master
+    :target: https://travis-ci.org/divio/djangocms-link-manager
+
 An extensible means of checking for broken links in virtually any
 django CMS plugin.
 
@@ -86,3 +89,38 @@ startup with: ::
 
     link_manager_pool.register('MyLinkPlugin', MyLinkPluginLinkManager)
 
+
+Support for additional URL schemes
+----------------------------------
+
+This package already provides support for the following URL schemes: `ftp`,
+`ftps`, `http`, `https`, `bitcoin`, `mailto`, and `tel`. If a project requires
+validation of other schemes, they can be added to the link manager (subclass of
+LinkManager) simply by including a method with the name `validate_MYSCHEME` with
+the signature: ::
+
+    def validate_MYSCHEME(self, parts, verify_exists=False):
+        # Do you thing here
+        if valid:
+            return True
+        else:
+            return False
+
+`verify_exists`, when set to True, is intended to check to see if the resource
+is really available. For example, for `http(s)`, `ftp(s)` validator will
+actually attempt to fetch the URL (using an HTTP HEAD request) and will return
+`False` if the result is an HTTP 404 error. Use this responsibly.
+
+`parts` is a dict of the URLs parts as follows: ::
+
+    parts = {
+        'scheme': ...,
+        'netloc': ...,
+        'path': ...,
+        'params': ...,
+        'query': ...,
+        'fragment': ...,
+    }
+
+For more information about these elements, please review the docs for
+`urllib.parse <https://docs.python.org/3/library/urllib.html>`_.
