@@ -25,9 +25,9 @@ This package requires Python 2.7 or later and Django 1.8 or later.
 
 First, install the package from PyPI: ::
 
-    `pip install djangocms-link-manager`
+    pip install djangocms-link-manager
 
-Then add it to your `INSTALLED_APPS`: ::
+Then add it to your ``INSTALLED_APPS``: ::
 
     # settings.py
     ...
@@ -42,7 +42,7 @@ Usage
 
 The simplest way to run this is: ::
 
-    `python manage.py check_links`
+    python manage.py check_links
 
 However, this command accepts a number of optional arguments: ::
 
@@ -63,11 +63,11 @@ Extending
 ---------
 
 This package currently supports to plugins by their class names:
-`Bootstrap3ButtonCMSPlugin` and `LinkPlugin` which come from the packages:
-`aldryn_bootstrap3` and `djangocms_link` respectively. To add support for
+``Bootstrap3ButtonCMSPlugin`` and ``LinkPlugin`` which come from the packages:
+``aldryn_bootstrap3`` and ``djangocms_link`` respectively. To add support for
 a new CMSPlugin, one simply writes creates a class that subclasses
-`djangocms_link_manager.link_manager.LinkManager` and overrides the
-`check_link()` method according to the particulars of the CMSPlugin you wish
+``djangocms_link_manager.link_manager.LinkManager`` and overrides the
+``check_link()`` method according to the particulars of the CMSPlugin you wish
 to support.
 
 Once this is created, register the link manager into the link manager pool on
@@ -93,11 +93,11 @@ startup with: ::
 Support for additional URL schemes
 ----------------------------------
 
-This package already provides support for the following URL schemes: `ftp`,
-`ftps`, `http`, `https`, `bitcoin`, `mailto`, and `tel`. If a project requires
-validation of other schemes, they can be added to the link manager (subclass of
-LinkManager) simply by including a method with the name `validate_MYSCHEME` with
-the signature: ::
+This package already provides support for the following URL schemes: ``ftp``,
+``ftps``, ``http``, ``https``, ``bitcoin``, ``mailto``, and ``tel``. If a project
+requires validation of other schemes, they can be added to the link manager
+(subclass of LinkManager) simply by including a method with the name
+``validate_MYSCHEME`` with the signature: ::
 
     def validate_MYSCHEME(self, parts, verify_exists=False):
         # Do you thing here
@@ -106,12 +106,14 @@ the signature: ::
         else:
             return False
 
-`verify_exists`, when set to True, is intended to check to see if the resource
-is really available. For example, for `http(s)`, `ftp(s)` validator will
-actually attempt to fetch the URL (using an HTTP HEAD request) and will return
-`False` if the result is an HTTP 404 error. Use this responsibly.
+Replace "MYSCHEME" with the lower-case scheme of your choice.
 
-`parts` is a dict of the URLs parts as follows: ::
+``verify_exists``, when set to True, is intended to check to see if the resource
+is really available. For example, for ``http(s)``, ``ftp(s)`` validator will
+actually attempt to fetch the URL (using an HTTP HEAD request) and will return
+``False`` if the result is an HTTP 404 error. Use this responsibly.
+
+``parts`` is a dict of the URLs parts as follows: ::
 
     parts = {
         'scheme': ...,
