@@ -6,8 +6,9 @@ from djangocms_link_manager import __version__
 
 
 INSTALL_REQUIRES = [
-    'django>=1.7.0',
+    'django>=1.8.0',
     'django-cms>=3.0',
+    'phonenumberslite>=7.4,<8.0',
 ]
 
 # https://pypi.python.org/pypi?%3Aaction=list_classifiers
@@ -15,7 +16,6 @@ CLASSIFIERS = [
     'Development Status :: 5 - Production/Stable',
     'Environment :: Web Environment',
     'Framework :: Django',
-    'Framework :: Django :: 1.7',
     'Framework :: Django :: 1.8',
     'Framework :: Django :: 1.9',
     'Intended Audience :: Developers',

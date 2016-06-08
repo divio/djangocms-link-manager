@@ -117,4 +117,3 @@ class Command(BaseCommand):
                 print('ERROR: Report could not be sent via mail: {0}'.format(exception))
         else:
             print(report)
-

@@ -14,12 +14,30 @@ each with their own fields for store a variety of types of hyperlinks. As a
 result, it can become a challenge to find bad links across the whole project.
 This project attempts to provide a solution in an extensible manner.
 
+------------
+Installation
+------------
+
+This package requires Python 2.7 or later and Django 1.8 or later.
+
+First, install the package from PyPI: ::
+
+    `pip install djangocms-link-manager`
+
+Then add it to your `INSTALLED_APPS`: ::
+
+    # settings.py
+    ...
+    INSTALLED_APPS = [
+        ...
+        'djangocms_link_manager',
+    ]
 
 -----
 Usage
 -----
 
-The simplest way to run this is:
+The simplest way to run this is: ::
 
     `python manage.py check_links`
 
@@ -67,3 +85,4 @@ startup with: ::
             )
 
     link_manager_pool.register('MyLinkPlugin', MyLinkPluginLinkManager)
+
