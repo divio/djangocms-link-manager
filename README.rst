@@ -1,6 +1,6 @@
-======================
-djangoCMS Link Manager
-======================
+=======================
+django CMS Link Manager
+=======================
 
 .. image:: https://travis-ci.org/divio/djangocms-link-manager.svg?branch=master
     :target: https://travis-ci.org/divio/djangocms-link-manager
@@ -100,7 +100,7 @@ requires validation of other schemes, they can be added to the link manager
 ``validate_MYSCHEME`` with the signature: ::
 
     def validate_MYSCHEME(self, parts, verify_exists=False):
-        # Do you thing here
+        # Do your thing here
         if valid:
             return True
         else:

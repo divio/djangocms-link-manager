@@ -22,7 +22,7 @@ except ImportError:  # pragma: no cover
 from django.core.validators import URLValidator, EmailValidator
 from django.core.exceptions import ValidationError
 
-LinkReport = namedtuple('LinkReport', 'valid text url')
+LinkReport = namedtuple(typename='LinkReport', field_names=['valid', 'text', 'url'])
 
 
 class HeadRequest(Request):
@@ -38,22 +38,17 @@ class LinkManager(object):
         self.scheme = scheme
         self.netloc = netloc
 
-    def validate_mailto(self, parts, verify_exists=False):
+    def validate_default(self, parts, verify_exists=False):
         """
-        Validates a mailto URL, by using Django's EmailValidator
+        Validation for FTP, FTPS, HTTP, and HTTPS scehems.
+        When `verify_exists` is set to True, this validator will make HEAD
+        requests for the URL and will return False if the URL returns a status
+        outside of the range of 200 >= «status» > 400.
+
         :param parts:
         :param verify_exists:
         :return:
         """
-        validator = EmailValidator()
-        try:
-            validator(parts['path'])
-        except ValidationError:
-            return False
-        else:
-            return True
-
-    def validate_default(self, parts, verify_exists=False):
         validator = URLValidator()
         if not parts['netloc']:
             # If there is no host/port, then this may be a link to a local
@@ -75,6 +70,23 @@ class LinkManager(object):
                     return False
             else:
                 return True
+
+    def validate_mailto(self, parts, verify_exists=False):
+        """
+        Validates a mailto URL, by using Django's EmailValidator.
+        `verify_exists` does nothing at this time.
+
+        :param parts:
+        :param verify_exists:
+        :return:
+        """
+        validator = EmailValidator()
+        try:
+            validator(parts['path'])
+        except ValidationError:
+            return False
+        else:
+            return True
 
     def validate_bitcoin(self, parts, verify_exists=False):
         """
@@ -131,15 +143,18 @@ class LinkManager(object):
 
     def validate_url(self, url, verify_exists=False):
         """
-        Utility for checking absolute, external URLs.
+        Utility for checking any URL. This is the primary entry-point. This
+        method acts as a router to the various scheme-specific validators.
+
         :param url:
         :param verify_exists:
         :return:
         """
         if not url:
-            # Special case, '' is passed as the URL. Without this test, it
-            # becomes a relative link to the root of the project, which it
-            # kinda is, but isn't quite right. Also catches `None`, etc.
+            # Special case. If an empty string is passed as the URL. Without
+            # this test, it becomes a relative link to the root of the
+            # project, which it kinda is, but isn't quite right. Also catches
+            # `None`, etc.
             return False
 
         parts = OrderedDict(zip(
@@ -166,12 +181,11 @@ class LinkManager(object):
 
     def check_link(self, instance, verify_exists=False):
         """
-        Return True if the plugin instance's url form is valid.
-        If `verify_exists` is True, also attempt to HEAD the link, return True
-        only if exists.
+        Return True if the plugin instance's url form is valid. This method is
+        encouraged to call upon self.validate_url().
 
         :param instance: Plugin instance
         :param verify_exists:
-        :return: (Boolean, link_text, url)
+        :return: LinkReport
         """
         raise NotImplementedError('Must be implemented in sub-class.')
