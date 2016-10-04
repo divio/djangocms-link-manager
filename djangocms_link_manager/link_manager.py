@@ -22,12 +22,15 @@ except ImportError:  # pragma: no cover
 from django.core.validators import URLValidator, EmailValidator
 from django.core.exceptions import ValidationError
 
-LinkReport = namedtuple(typename='LinkReport', field_names=['valid', 'text', 'url'])
+LinkReport = namedtuple(
+    typename='LinkReport',
+    field_names=('valid', 'text', 'url'),
+)
 
 
 class HeadRequest(Request):
     def get_method(self):
-        return "HEAD"
+        return 'HEAD'
 
 
 class LinkManager(object):

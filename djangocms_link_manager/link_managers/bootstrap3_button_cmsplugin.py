@@ -10,37 +10,35 @@ from ..link_manager import LinkManager, LinkReport
 class Bootstrap3ButtonCMSPluginLinkManager(LinkManager):
 
     def check_link(self, instance, verify_exists=False):
+        valid = False
+
         if instance.link_phone:
-            # TODO?
-            return LinkReport(valid=True, text=instance.label, url=instance.link_phone)
+            url = instance.link_phone
+            valid = True  # TODO
         elif instance.link_mailto:
-            # TODO?
-            return LinkReport(valid=True, text=instance.label, url=instance.link_mailto)
+            url = instance.link_mailto
+            valid = True  # TODO
         elif instance.link_url:
-            return LinkReport(
-                valid=self.validate_url(instance.link_url, verify_exists=verify_exists),
-                text=instance.label,
-                url=instance.link_url
-            )
+            url = instance.link_url
+            valid = self.validate_url(url, verify_exists=verify_exists)
         elif instance.link_page:
             try:
-                url = instance.link_page.get_absolute_url('en')
-                return LinkReport(
-                    valid=True,
-                    text=instance.label,
-                    url=url
-                )
+                url = instance.link_page.get_absolute_url(instance.language)
             except NoReverseMatch:
-                return LinkReport(
-                    valid=False,
-                    text=instance.label,
-                    url=None
-                )
+                url = None
+                valid = False
+            else:
+                valid = True
+
         elif instance.link_file:
-            return LinkReport(
-                valid=self.validate_url(instance.link_file.url, verify_exists=verify_exists),
-                text=instance.label,
-                url=instance.link_file.url
-            )
+            url = instance.link_file.url
+            valid = self.validate_url(url, verify_exists=verify_exists),
+
         else:
-            return LinkReport(valid=False, text=instance.label, url=None)
+            url = None
+
+        return LinkReport(
+            valid=valid,
+            text=instance.label,
+            url=url,
+        )

@@ -113,6 +113,7 @@ class Command(BaseCommand):
                     report,
                     fail_silently=False
                 )
+                print('Successfully sent broken link report via email')
             except Exception as exception:
                 print('ERROR: Report could not be sent via mail: {0}'.format(exception))
         else:
