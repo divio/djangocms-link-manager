@@ -10,24 +10,22 @@ from ..link_manager import LinkManager, LinkReport
 class CMSPluginLinkLinkManager(LinkManager):
 
     def check_link(self, instance, verify_exists=False):
+        internal_link = instance.internal_link
+        valid = False
 
-        if instance.page_link:
+        if internal_link:
             try:
-                url = instance.page_link.get_absolute_url('en')
-                return LinkReport(
-                    valid=True,
-                    text=instance.name,
-                    url=url
-                )
+                url = internal_link.get_absolute_url(instance.language)
             except NoReverseMatch:
-                return LinkReport(
-                    valid=False,
-                    text=instance.name,
-                    url=None
-                )
+                url = None
+            else:
+                valid = True
         else:
-            return LinkReport(
-                valid=self.validate_url(instance.url, verify_exists=verify_exists),
-                text=instance.name,
-                url=instance.url
-            )
+            url = instance.external_link
+            valid = self.validate_url(url, verify_exists=verify_exists)
+
+        return LinkReport(
+            valid=valid,
+            text=instance.name,
+            url=url,
+        )
