@@ -2,6 +2,12 @@ Changelog
 =========
 
 
+0.1.1 (2016-10-04)
+------------------
+
+* Fix missing manifest entry for templates
+
+
 0.1.0 (2016-10-04)
 ------------------
 
