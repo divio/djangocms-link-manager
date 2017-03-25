@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.2.0 (2017-03-25)
+------------------
+
+* More info in report
+* Allow multiple Reports per Plugin
+
 
 0.1.1 (2016-10-04)
 ------------------
