@@ -11,7 +11,7 @@ from django.utils.translation import ugettext as _
 
 from django.core.mail import mail_managers
 
-from cms.models import CMSPlugin
+from cms.models import CMSPlugin, NoReverseMatch
 
 from ...link_manager_pool import link_manager_pool
 
@@ -72,27 +72,58 @@ class Command(BaseCommand):
                 Q(placeholder__page__publisher_is_draft=False)
             )
         )
-
-        for link_plugin in link_plugins:
+        self.stdout.write('Will check {} Plugins'.format(link_plugins.count()))
+        count = 0
+        for link_plugin in link_plugins.iterator():
+            count += 1
+            if not (count % 1000):
+                self.stdout.write('  Checked {} plugins...'.format(count))
             plugin_inst, plugin_class = link_plugin.get_plugin_instance()
             link_manager = self.get_link_manager(plugin_inst.plugin_type, scheme=scheme, netloc=netloc)
 
             if link_manager:
-                link_report = link_manager.check_link(plugin_inst, verify_exists=verify_exists)
-                count_all_links += 1
+                link_reports = link_manager.check_link(
+                    plugin_inst,
+                    verify_exists=verify_exists,
+                )
+                # Convert to a list if only a single item was returned.
+                try:
+                    iter(link_reports)
+                except TypeError:
+                    # Result is not a list
+                    link_reports = [link_reports]
 
-                if not link_report.valid:
-                    slot = link_plugin.placeholder.slot
-                    page = getattr(link_plugin.placeholder, 'page', None)
-                    bad_link = {
-                        'cls': plugin_inst.plugin_type,
-                        'page': page,
-                        'pk': plugin_inst.pk,
-                        'slot': slot,
-                        'label': link_report.text,
-                        'url': link_report.url,
-                    }
-                    bad_links.append(bad_link)
+                for link_report in link_reports:
+                    count_all_links += 1
+
+                    if not link_report.valid:
+                        slot = link_plugin.placeholder.slot
+                        page = getattr(link_plugin.placeholder, 'page', None)
+                        if page:
+                            try:
+                                page_url = 'https://{}{}'.format(
+                                    page.site.domain,
+                                    page.get_absolute_url(plugin_inst.language),
+                                )
+                            except NoReverseMatch:
+                                page_url = ''
+                        else:
+                            page_url = ''
+
+                        bad_link = {
+                            'cls': plugin_inst.plugin_type,
+                            'page': page,
+                            'page_url': page_url,
+                            'pk': plugin_inst.pk,
+                            'slot': slot,
+                            'label': link_report.text,
+                            'url': link_report.url,
+                            'instance': plugin_inst,
+                        }
+                        print(
+                            'Broken link "{url}" on "{page_url}" plugin.id:{pk} placeholder:{slot}'.format(**bad_link)
+                        )
+                        bad_links.append(bad_link)
             else:
                 if plugin_inst.plugin_type not in unknown_plugin_classes:
                     unknown_plugin_classes.append(plugin_inst.plugin_type)

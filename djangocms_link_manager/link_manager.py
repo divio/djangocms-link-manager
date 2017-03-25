@@ -2,6 +2,8 @@
 
 from __future__ import unicode_literals
 
+import httplib
+
 import codecs
 import phonenumbers
 import warnings
@@ -22,10 +24,14 @@ except ImportError:  # pragma: no cover
 from django.core.validators import URLValidator, EmailValidator
 from django.core.exceptions import ValidationError
 
-LinkReport = namedtuple(
-    typename='LinkReport',
-    field_names=('valid', 'text', 'url'),
-)
+import attr
+
+
+@attr.s(slots=True)
+class LinkReport(object):
+    valid = attr.ib()
+    text = attr.ib()
+    url = attr.ib()
 
 
 class HeadRequest(Request):
@@ -33,13 +39,13 @@ class HeadRequest(Request):
         return 'HEAD'
 
 
+@attr.s(slots=True)
 class LinkManager(object):
     """
     Defines an interface for the link manager.
     """
-    def __init__(self, scheme='http', netloc='localhost:8000'):
-        self.scheme = scheme
-        self.netloc = netloc
+    scheme = attr.ib(default='http')
+    netloc = attr.ib(default='localhost:8000')
 
     def validate_default(self, parts, verify_exists=False):
         """
@@ -58,7 +64,6 @@ class LinkManager(object):
             # resource (media or static asset, etc.) Use the provided default.
             parts['netloc'] = self.netloc
         url = urlunparse(parts.values())
-
         try:
             validator(url)
         except ValidationError:
@@ -69,7 +74,7 @@ class LinkManager(object):
                     response = urlopen(HeadRequest(url))
                     # NOTE: urllib should have already resolved any 301/302s
                     return 200 <= response.code < 400  # pragma: no cover
-                except (HTTPError, URLError):
+                except (HTTPError, URLError, httplib.BadStatusLine, UnicodeEncodeError):
                     return False
             else:
                 return True

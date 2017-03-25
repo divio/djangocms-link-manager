@@ -9,6 +9,7 @@ INSTALL_REQUIRES = [
     'django>=1.8.0',
     'django-cms>=3.0',
     'phonenumberslite>=7.4,<8.0',
+    'attrs',
 ]
 
 # https://pypi.python.org/pypi?%3Aaction=list_classifiers
