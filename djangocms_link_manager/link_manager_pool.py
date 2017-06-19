@@ -18,4 +18,5 @@ class LinkManagerPool(object):
     def get_link_plugin_types(self):
         return self._managers.keys()
 
+
 link_manager_pool = LinkManagerPool()

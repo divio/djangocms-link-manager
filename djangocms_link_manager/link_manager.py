@@ -2,22 +2,22 @@
 
 from __future__ import unicode_literals
 
-import httplib
-
 import codecs
 import phonenumbers
 import warnings
 
-from collections import namedtuple, OrderedDict
+from collections import OrderedDict
 from hashlib import sha256
 
 try:  # pragma: no cover
     # Python 3.x
+    from http.client import BadStatusLine
     from urllib.parse import urlparse, urlunparse
     from urllib.request import Request, urlopen
     from urllib.error import HTTPError, URLError
 except ImportError:  # pragma: no cover
     # Python 2.x
+    from httplib import BadStatusLine
     from urlparse import urlparse, urlunparse
     from urllib2 import urlopen, Request, HTTPError, URLError
 
@@ -74,7 +74,7 @@ class LinkManager(object):
                     response = urlopen(HeadRequest(url))
                     # NOTE: urllib should have already resolved any 301/302s
                     return 200 <= response.code < 400  # pragma: no cover
-                except (HTTPError, URLError, httplib.BadStatusLine, UnicodeEncodeError):
+                except (HTTPError, URLError, BadStatusLine, UnicodeEncodeError):
                     return False
             else:
                 return True

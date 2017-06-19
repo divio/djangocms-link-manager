@@ -120,7 +120,7 @@ class Command(BaseCommand):
                             'url': link_report.url,
                             'instance': plugin_inst,
                         }
-                        print(
+                        self.stdout.write(
                             'Broken link "{url}" on "{page_url}" plugin.id:{pk} placeholder:{slot}'.format(**bad_link)
                         )
                         bad_links.append(bad_link)
@@ -144,8 +144,8 @@ class Command(BaseCommand):
                     report,
                     fail_silently=False
                 )
-                print('Successfully sent broken link report via email')
+                self.stdout.write('Successfully sent broken link report via email')
             except Exception as exception:
-                print('ERROR: Report could not be sent via mail: {0}'.format(exception))
+                self.stderr.write('ERROR: Report could not be sent via mail: {0}'.format(exception))
         else:
-            print(report)
+            self.stdout.write(report)
