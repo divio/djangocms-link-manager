@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.2.1 (2017-06-19)
+------------------
+
+* Fixed a ``UnicodeEncode`` error raised when running the command on non-utf8 environments.
+
+
 0.2.0 (2017-03-25)
 ------------------
 
